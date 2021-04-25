@@ -1,0 +1,9 @@
+---
+- name: Installation of Packages
+  hosts: "{{ variable_host | default('none') }}"
+
+  tasks:
+    - name: Install Podman Packages
+      yum:
+        name: podman
+        state: latest
