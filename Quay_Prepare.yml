@@ -1,9 +1,23 @@
 ---
-- name: Installation of Packages
-  hosts: "{{ variable_host | default('none') }}"
+- name: Installation of Packages and Preparing the System
+  hosts: quay
 
   tasks:
+
+## Install the container tools packages for Podman
     - name: Install Podman Packages
-      yum:
-        name: podman
-        state: latest
+      dnf:
+        name: '@container-tools:rhel8'
+        state: present
+
+## Prepare firewall for Quay
+    - name: Enable Firewall Ports
+      firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop:
+        - 8443/tcp
+        - 8080/tcp
+        - 443/tcp
