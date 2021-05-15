@@ -93,6 +93,13 @@
 #      shell: podman run -d --rm --name postgresql-quay -e POSTGRESQL_USER={{ pg_user }} -e POSTGRESQL_PASSWORD={{ pg_pass }} -e POSTGRESQL_DATABASE={{ pg_db }} -e POSTGRESQL_ADMIN_PASSWORD={{ pg_admin_pass }} -p 5432:5432 -v {{ QUAY_DIR }}/postgres-quay:/var/lib/pgsql/data:Z registry.redhat.io/rhel8/postgresql-10:1
 
 
+## Insert Pause to wait for PostGres Container to Come online
+    - name: Wait for Postgres container to come online
+      pause:
+        seconds: 30
+
+
+
 ## Ensure that the Postgres pg_trgm module is installed (required by Quay)
     - name: Modify Postgres container
       shell: podman exec -it postgresql-quay /bin/bash -c 'echo "CREATE EXTENSION IF NOT EXISTS pg_trgm" | psql -d quay -U postgres'
@@ -124,7 +131,7 @@
 ## Pauses until complete
     - name: Open the Quay Config Container Site
       pause:
-        prompt: "Go to the Quay Configuration container website and enter the appropriate configuration values. For help, look at https://github.com/tmichett/quay_lab/References/Quay-3.5_Deployment.pdf. Login with the credentials provided which are UN: quayconfig and PW: {{ quay_config_pass }}"
+        prompt: "Go to the Quay Configuration container website and enter the appropriate configuration values. For help, look at https://github.com/tmichett/quay_lab/References/Quay-3.5_Deployment.pdf. Login with the credentials provided which are UN: quayconfig and PW: {{ quay_config_pass }}. Press 'Enter' when you've completed the configuration and downloaded the file. The file should be placed in the files directory for this playbook."
 
 ## Stop Quay Config Container
     - name: Stop and Remove the Quay Config Container
